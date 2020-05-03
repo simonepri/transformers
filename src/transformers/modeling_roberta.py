@@ -476,6 +476,7 @@ class RobertaForTokenClassification(BertPreTrainedModel):
         self.roberta = RobertaModel(config)
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.classifier = nn.Linear(config.hidden_size, config.num_labels)
+        self.loss_fct = CrossEntropyLoss()
 
         self.init_weights()
 
@@ -544,7 +545,7 @@ class RobertaForTokenClassification(BertPreTrainedModel):
         outputs = (logits,) + outputs[2:]  # add hidden states and attention if they are here
 
         if labels is not None:
-            loss_fct = CrossEntropyLoss()
+            loss_fct = self.loss_fct
             # Only keep active parts of the loss
             if attention_mask is not None:
                 active_loss = attention_mask.view(-1) == 1
